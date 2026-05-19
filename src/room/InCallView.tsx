@@ -60,6 +60,7 @@ import { makeSpotlightPortraitLayout } from "../grid/SpotlightPortraitLayout";
 import { makeTogetherLayout } from "../grid/TogetherLayout";
 import { makeFreeStageLayout } from "../grid/FreeStageLayout";
 import { makeHexagonLayout } from "../grid/HexagonLayout";
+import { makeAsYouWantLayout } from "../grid/AsYouWantLayout";
 import { GridTileViewModel, type TileViewModel } from "../state/TileViewModel";
 import {
   ReactionsSenderProvider,
@@ -493,6 +494,7 @@ export const InCallView: FC<InCallViewProps> = ({
       together: makeTogetherLayout(inputs),
       "free-stage": makeFreeStageLayout(inputs),
       hexagon: makeHexagonLayout(inputs),
+      "as-you-want": makeAsYouWantLayout(inputs),
     };
   }, [gridBoundsObservable$]);
 

@@ -83,6 +83,12 @@ export interface HexagonLayoutMedia {
   grid: UserMediaViewModel[];
 }
 
+export interface AsYouWantLayoutMedia {
+  type: "as-you-want";
+  edgeToEdge: false;
+  grid: UserMediaViewModel[];
+}
+
 export type LayoutMedia =
   | GridLayoutMedia
   | SpotlightLandscapeLayoutMedia
@@ -93,7 +99,8 @@ export type LayoutMedia =
   | PipLayoutMedia
   | TogetherLayoutMedia
   | FreeStageLayoutMedia
-  | HexagonLayoutMedia;
+  | HexagonLayoutMedia
+  | AsYouWantLayoutMedia;
 
 export interface Alignment {
   inline: "start" | "end";
@@ -167,6 +174,12 @@ export interface HexagonLayout {
   setVisibleTiles: (value: number) => void;
 }
 
+export interface AsYouWantLayout {
+  type: "as-you-want";
+  grid: GridTileViewModel[];
+  setVisibleTiles: (value: number) => void;
+}
+
 /**
  * A layout defining the media tiles present on screen and their visual
  * arrangement.
@@ -181,4 +194,5 @@ export type Layout =
   | PipLayout
   | TogetherLayout
   | FreeStageLayout
-  | HexagonLayout;
+  | HexagonLayout
+  | AsYouWantLayout;

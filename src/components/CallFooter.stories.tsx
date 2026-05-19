@@ -69,7 +69,14 @@ export const Default: Story = {
   argTypes: {
     layoutMode: {
       control: "radio",
-      options: ["grid", "spotlight", "together", "free-stage", "hexagon"],
+      options: [
+        "grid",
+        "spotlight",
+        "together",
+        "free-stage",
+        "hexagon",
+        "as-you-want",
+      ],
     },
     audioOutputSwitcher: {
       control: "select",

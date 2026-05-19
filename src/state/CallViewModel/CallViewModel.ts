@@ -89,6 +89,7 @@ import { type ProcessorState } from "../../livekit/TrackProcessorContext";
 import { ElementWidgetActions, widget } from "../../widget";
 import {
   type Alignment,
+  type AsYouWantLayoutMedia,
   type FreeStageLayoutMedia,
   type GridLayoutMedia,
   type HexagonLayoutMedia,
@@ -209,7 +210,8 @@ export type GridMode =
   | "spotlight"
   | "together"
   | "free-stage"
-  | "hexagon";
+  | "hexagon"
+  | "as-you-want";
 
 export type WindowMode = "normal" | "narrow" | "flat" | "pip";
 
@@ -1218,6 +1220,14 @@ export function createCallViewModel$(
     })),
   );
 
+  const asYouWantLayoutMedia$: Observable<AsYouWantLayoutMedia> = grid$.pipe(
+    map((grid) => ({
+      type: "as-you-want",
+      edgeToEdge: false,
+      grid,
+    })),
+  );
+
   /**
    * The media to be used to produce a layout.
    */
@@ -1249,6 +1259,8 @@ export function createCallViewModel$(
                     return freeStageLayoutMedia$;
                   case "hexagon":
                     return hexagonLayoutMedia$;
+                  case "as-you-want":
+                    return asYouWantLayoutMedia$;
                 }
               }),
             );
@@ -1273,6 +1285,7 @@ export function createCallViewModel$(
                   case "together":
                   case "free-stage":
                   case "hexagon":
+                  case "as-you-want":
                     // Grid-style modes all fall back to a "spotlight"
                     // landscape layout in flat window mode, since there's not
                     // enough vertical space for a real grid arrangement.
@@ -1296,7 +1309,8 @@ export function createCallViewModel$(
           l.type !== "grid" &&
           l.type !== "together" &&
           l.type !== "free-stage" &&
-          l.type !== "hexagon",
+          l.type !== "hexagon" &&
+          l.type !== "as-you-want",
       ),
     ),
   );
@@ -1544,6 +1558,7 @@ export function createCallViewModel$(
             case "together":
             case "free-stage":
             case "hexagon":
+            case "as-you-want":
               [layout, newTiles] = gridOnlyLayout(
                 media,
                 visibleTiles,

@@ -143,6 +143,7 @@
     "text": "This call already exists, would you like to join?",
     "title": "Join existing call?"
   },
+  "layout_as_you_want_label": "As you want",
   "layout_free_stage_label": "Free stage",
   "layout_grid_label": "Grid",
   "layout_hexagon_label": "Hexagon",

@@ -51,7 +51,11 @@ export function gridLikeLayout(
   ];
 }
 
-export type GridOnlyLayoutType = "together" | "free-stage" | "hexagon";
+export type GridOnlyLayoutType =
+  | "together"
+  | "free-stage"
+  | "hexagon"
+  | "as-you-want";
 
 /**
  * Produces a grid-only layout (no spotlight, just a grid of participant tiles)

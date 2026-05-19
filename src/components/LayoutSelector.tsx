@@ -104,6 +104,51 @@ const HexagonIcon: IconType = (props) => (
   </svg>
 );
 
+// Drag-arrow over a tile, evoking "rearrange freely".
+const AsYouWantIcon: IconType = (props) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <rect
+      x="3"
+      y="3"
+      width="8"
+      height="8"
+      rx="1.5"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+    <rect
+      x="13"
+      y="3"
+      width="8"
+      height="8"
+      rx="1.5"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+    <rect
+      x="3"
+      y="13"
+      width="8"
+      height="8"
+      rx="1.5"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+    <path
+      d="M14 18h6m0 0-2.5-2.5M20 18l-2.5 2.5M17 14v8"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 interface LayoutMeta {
   id: GridMode;
   label: string;
@@ -125,6 +170,11 @@ function getLayouts(): LayoutMeta[] {
       Icon: FreeStageIcon,
     },
     { id: "hexagon", label: t("layout_hexagon_label"), Icon: HexagonIcon },
+    {
+      id: "as-you-want",
+      label: t("layout_as_you_want_label"),
+      Icon: AsYouWantIcon,
+    },
   ];
 }
 

@@ -28,6 +28,7 @@ const gridLikeModes = new Set<GridMode>([
   "together",
   "free-stage",
   "hexagon",
+  "as-you-want",
 ]);
 
 /**

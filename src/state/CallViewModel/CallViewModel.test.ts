@@ -153,7 +153,7 @@ export interface PipLayoutSummary {
 }
 
 export interface GridOnlyLayoutSummary {
-  type: "together" | "free-stage" | "hexagon";
+  type: "together" | "free-stage" | "hexagon" | "as-you-want";
   grid: string[];
 }
 
@@ -235,6 +235,7 @@ function summarizeLayout$(l$: Observable<Layout>): Observable<LayoutSummary> {
         case "together":
         case "free-stage":
         case "hexagon":
+        case "as-you-want":
           return combineLatest(
             l.grid.map((vm) => vm.media$),
             (...grid) => ({
