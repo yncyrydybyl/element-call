@@ -57,6 +57,9 @@ import { makeOneOnOnePortraitLayout } from "../grid/OneOnOnePortraitLayout";
 import { makeSpotlightExpandedLayout } from "../grid/SpotlightExpandedLayout";
 import { makeSpotlightLandscapeLayout } from "../grid/SpotlightLandscapeLayout";
 import { makeSpotlightPortraitLayout } from "../grid/SpotlightPortraitLayout";
+import { makeTogetherLayout } from "../grid/TogetherLayout";
+import { makeFreeStageLayout } from "../grid/FreeStageLayout";
+import { makeHexagonLayout } from "../grid/HexagonLayout";
 import { GridTileViewModel, type TileViewModel } from "../state/TileViewModel";
 import {
   ReactionsSenderProvider,
@@ -487,6 +490,9 @@ export const InCallView: FC<InCallViewProps> = ({
       "spotlight-expanded": makeSpotlightExpandedLayout(inputs),
       "one-on-one-landscape": makeOneOnOneLandscapeLayout(inputs),
       "one-on-one-portrait": makeOneOnOnePortraitLayout(inputs),
+      together: makeTogetherLayout(inputs),
+      "free-stage": makeFreeStageLayout(inputs),
+      hexagon: makeHexagonLayout(inputs),
     };
   }, [gridBoundsObservable$]);
 

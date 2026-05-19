@@ -8,15 +8,10 @@ Please see LICENSE in the repository root for full details.
 import { type FC, type JSX, type Ref, useMemo } from "react";
 import classNames from "classnames";
 import { BehaviorSubject } from "rxjs";
-import { Switch } from "@vector-im/compound-web";
-import { t } from "i18next";
-import {
-  SpotlightIcon,
-  GridIcon,
-} from "@vector-im/compound-design-tokens/assets/web/icons";
 
 import LogoMark from "../icons/LogoMark.svg?react";
 import LogoType from "../icons/LogoType.svg?react";
+import { LayoutSelector } from "./LayoutSelector";
 import {
   EndCallButton,
   MicButton,
@@ -289,15 +284,7 @@ export const CallFooter: FC<FooterProps> = ({
       </div>
       {!hideControls && <div className={styles.buttons}>{buttons}</div>}
       {setLayoutMode && layoutMode && showLayoutSwitcher && (
-        <Switch<"spotlight", "grid">
-          name="layoutMode"
-          aria-label={t("layout_switch_label")}
-          leftLabel={t("layout_spotlight_label")}
-          leftValue="spotlight"
-          leftIcon={SpotlightIcon}
-          rightLabel={t("layout_grid_label")}
-          rightValue="grid"
-          rightIcon={GridIcon}
+        <LayoutSelector
           className={styles.layout}
           value={layoutMode}
           onChange={setLayoutMode}

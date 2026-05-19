@@ -67,7 +67,10 @@ export const Default: Story = {
     layout: "fullscreen",
   },
   argTypes: {
-    layoutMode: { control: "radio", options: ["grid", "spotlight"] },
+    layoutMode: {
+      control: "radio",
+      options: ["grid", "spotlight", "together", "free-stage", "hexagon"],
+    },
     audioOutputSwitcher: {
       control: "select",
       options: ["NoOutputCallback", "speaker", "earpiece"],
