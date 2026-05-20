@@ -19,6 +19,19 @@ import { constant, type Behavior } from "../Behavior.ts";
 import { type ObservableScope } from "../ObservableScope.ts";
 
 /**
+ * Modes that share their behavior with "grid": they are user-selectable
+ * grid-style arrangements that yield to "spotlight" when the natural mode
+ * forces it (e.g. during a remote screen share or in flat window mode).
+ */
+const gridLikeModes = new Set<GridMode>([
+  "grid",
+  "together",
+  "free-stage",
+  "hexagon",
+  "as-you-want",
+]);
+
+/**
  * Creates a layout mode switch that allows switching between grid and spotlight modes.
  * The actual layout mode might switch automatically to spotlight if there is a
  * remote screen share active or if the window mode is flat.
@@ -71,6 +84,16 @@ export function createLayoutModeSwitch(
           return naturalGridMode$.pipe(
             skipWhile((naturalMode) => naturalMode !== selection),
             startWith(selection),
+          );
+
+        if (gridLikeModes.has(selection))
+          // A grid-style mode (together, free-stage, hexagon). Use the user's
+          // selection while the natural mode is "grid", but yield to
+          // "spotlight" while it is forced (screen share or flat window).
+          return naturalGridMode$.pipe(
+            map((natural) =>
+              natural === "spotlight" ? "spotlight" : selection,
+            ),
           );
 
         // The user has selected spotlight mode. If this matches the natural

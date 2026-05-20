@@ -1,0 +1,36 @@
+/*
+Copyright 2026 Element Creations Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE in the repository root for full details.
+*/
+
+.fixed,
+.stage {
+  block-size: 100%;
+}
+
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: var(--gap);
+  padding-inline: var(--cpd-space-3x);
+}
+
+.stage > .slot {
+  width: var(--tile-width);
+  height: var(--tile-height);
+  z-index: var(--z-index, 1);
+  transform: translateY(var(--translate-y, 0)) rotate(var(--rotate, 0deg))
+    scale(var(--scale, 1));
+  transform-origin: center center;
+  transition: transform 0.3s ease;
+}
+
+.stage > .slot:hover,
+.stage > .slot:focus-within {
+  transform: translateY(var(--translate-y, 0)) rotate(0deg) scale(1.04);
+  z-index: 1000;
+}

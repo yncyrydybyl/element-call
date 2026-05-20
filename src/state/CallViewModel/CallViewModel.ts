@@ -67,7 +67,7 @@ import {
 import { isFirefox, platform } from "../../Platform";
 import { setPipEnabled$ } from "../../controls";
 import { TileStore } from "../TileStore";
-import { gridLikeLayout } from "../GridLikeLayout";
+import { gridLikeLayout, gridOnlyLayout } from "../GridLikeLayout";
 import { spotlightExpandedLayout } from "../SpotlightExpandedLayout";
 import { oneOnOneLandscapeLayout } from "../OneOnOneLandscapeLayout";
 import { oneOnOnePortraitLayout } from "../OneOnOnePortraitLayout";
@@ -89,7 +89,10 @@ import { type ProcessorState } from "../../livekit/TrackProcessorContext";
 import { ElementWidgetActions, widget } from "../../widget";
 import {
   type Alignment,
+  type AsYouWantLayoutMedia,
+  type FreeStageLayoutMedia,
   type GridLayoutMedia,
+  type HexagonLayoutMedia,
   type Layout,
   type LayoutMedia,
   type OneOnOneLandscapeLayoutMedia,
@@ -97,6 +100,7 @@ import {
   type SpotlightExpandedLayoutMedia,
   type SpotlightLandscapeLayoutMedia,
   type SpotlightPortraitLayoutMedia,
+  type TogetherLayoutMedia,
 } from "../layout-types.ts";
 import { ElementCallError, UnknownCallError } from "../../utils/errors.ts";
 import { type Epoch, type ObservableScope } from "../ObservableScope.ts";
@@ -201,7 +205,13 @@ const smallMobileCallThreshold = 3;
 // with the interface
 const showFooterMs = 4000;
 
-export type GridMode = "grid" | "spotlight";
+export type GridMode =
+  | "grid"
+  | "spotlight"
+  | "together"
+  | "free-stage"
+  | "hexagon"
+  | "as-you-want";
 
 export type WindowMode = "normal" | "narrow" | "flat" | "pip";
 
@@ -1186,6 +1196,38 @@ export function createCallViewModel$(
     })),
   );
 
+  const togetherLayoutMedia$: Observable<TogetherLayoutMedia> = grid$.pipe(
+    map((grid) => ({
+      type: "together",
+      edgeToEdge: false,
+      grid,
+    })),
+  );
+
+  const freeStageLayoutMedia$: Observable<FreeStageLayoutMedia> = grid$.pipe(
+    map((grid) => ({
+      type: "free-stage",
+      edgeToEdge: false,
+      grid,
+    })),
+  );
+
+  const hexagonLayoutMedia$: Observable<HexagonLayoutMedia> = grid$.pipe(
+    map((grid) => ({
+      type: "hexagon",
+      edgeToEdge: false,
+      grid,
+    })),
+  );
+
+  const asYouWantLayoutMedia$: Observable<AsYouWantLayoutMedia> = grid$.pipe(
+    map((grid) => ({
+      type: "as-you-want",
+      edgeToEdge: false,
+      grid,
+    })),
+  );
+
   /**
    * The media to be used to produce a layout.
    */
@@ -1211,6 +1253,14 @@ export function createCallViewModel$(
                           : spotlightLandscapeLayoutMedia$,
                       ),
                     );
+                  case "together":
+                    return togetherLayoutMedia$;
+                  case "free-stage":
+                    return freeStageLayoutMedia$;
+                  case "hexagon":
+                    return hexagonLayoutMedia$;
+                  case "as-you-want":
+                    return asYouWantLayoutMedia$;
                 }
               }),
             );
@@ -1232,8 +1282,13 @@ export function createCallViewModel$(
               switchMap((gridMode) => {
                 switch (gridMode) {
                   case "grid":
-                    // Yes, grid mode actually gets you a "spotlight" layout in
-                    // this window mode.
+                  case "together":
+                  case "free-stage":
+                  case "hexagon":
+                  case "as-you-want":
+                    // Grid-style modes all fall back to a "spotlight"
+                    // landscape layout in flat window mode, since there's not
+                    // enough vertical space for a real grid arrangement.
                     return spotlightLandscapeLayoutMedia$;
                   case "spotlight":
                     return spotlightExpandedLayoutMedia$(true);
@@ -1248,7 +1303,16 @@ export function createCallViewModel$(
   );
 
   const showSpotlightIndicators$ = scope.behavior<boolean>(
-    layoutMedia$.pipe(map((l) => l.type !== "grid")),
+    layoutMedia$.pipe(
+      map(
+        (l) =>
+          l.type !== "grid" &&
+          l.type !== "together" &&
+          l.type !== "free-stage" &&
+          l.type !== "hexagon" &&
+          l.type !== "as-you-want",
+      ),
+    ),
   );
 
   const showSpeakingIndicators$ = scope.behavior<boolean>(
@@ -1490,6 +1554,17 @@ export function createCallViewModel$(
               break;
             case "pip":
               [layout, newTiles] = pipLayout(media, prevTiles);
+              break;
+            case "together":
+            case "free-stage":
+            case "hexagon":
+            case "as-you-want":
+              [layout, newTiles] = gridOnlyLayout(
+                media,
+                visibleTiles,
+                setVisibleTiles,
+                prevTiles,
+              );
               break;
           }
 

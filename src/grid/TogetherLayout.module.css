@@ -1,0 +1,50 @@
+/*
+Copyright 2026 Element Creations Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE in the repository root for full details.
+*/
+
+.fixed,
+.bench {
+  block-size: 100%;
+  inline-size: 100%;
+}
+
+.bench {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-block-end: var(--cpd-space-6x);
+  padding-inline: calc(env(safe-area-inset-left) + var(--cpd-space-3x))
+    calc(env(safe-area-inset-right) + var(--cpd-space-3x));
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--gap);
+  /* The shared "stage" behind all the tiles. */
+  background:
+    radial-gradient(
+      ellipse at top,
+      var(--cpd-color-bg-subtle-secondary) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--cpd-color-bg-subtle-primary) 100%
+    );
+  border-radius: var(--cpd-space-6x) var(--cpd-space-6x) 0 0;
+  padding: var(--cpd-space-4x) var(--cpd-space-4x) 0 var(--cpd-space-4x);
+}
+
+.row > .slot {
+  inline-size: var(--tile-width);
+  block-size: var(--tile-height);
+  /* Tiles share a flat bottom edge so they look like they're standing together. */
+  border-radius: var(--cpd-space-4x) var(--cpd-space-4x) 0 0;
+  overflow: hidden;
+}

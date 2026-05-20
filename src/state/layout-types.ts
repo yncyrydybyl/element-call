@@ -65,6 +65,30 @@ export interface PipLayoutMedia {
   spotlight: MediaViewModel[];
 }
 
+export interface TogetherLayoutMedia {
+  type: "together";
+  edgeToEdge: false;
+  grid: UserMediaViewModel[];
+}
+
+export interface FreeStageLayoutMedia {
+  type: "free-stage";
+  edgeToEdge: false;
+  grid: UserMediaViewModel[];
+}
+
+export interface HexagonLayoutMedia {
+  type: "hexagon";
+  edgeToEdge: false;
+  grid: UserMediaViewModel[];
+}
+
+export interface AsYouWantLayoutMedia {
+  type: "as-you-want";
+  edgeToEdge: false;
+  grid: UserMediaViewModel[];
+}
+
 export type LayoutMedia =
   | GridLayoutMedia
   | SpotlightLandscapeLayoutMedia
@@ -72,7 +96,11 @@ export type LayoutMedia =
   | SpotlightExpandedLayoutMedia
   | OneOnOneLandscapeLayoutMedia
   | OneOnOnePortraitLayoutMedia
-  | PipLayoutMedia;
+  | PipLayoutMedia
+  | TogetherLayoutMedia
+  | FreeStageLayoutMedia
+  | HexagonLayoutMedia
+  | AsYouWantLayoutMedia;
 
 export interface Alignment {
   inline: "start" | "end";
@@ -128,6 +156,30 @@ export interface PipLayout {
   spotlight: SpotlightTileViewModel;
 }
 
+export interface TogetherLayout {
+  type: "together";
+  grid: GridTileViewModel[];
+  setVisibleTiles: (value: number) => void;
+}
+
+export interface FreeStageLayout {
+  type: "free-stage";
+  grid: GridTileViewModel[];
+  setVisibleTiles: (value: number) => void;
+}
+
+export interface HexagonLayout {
+  type: "hexagon";
+  grid: GridTileViewModel[];
+  setVisibleTiles: (value: number) => void;
+}
+
+export interface AsYouWantLayout {
+  type: "as-you-want";
+  grid: GridTileViewModel[];
+  setVisibleTiles: (value: number) => void;
+}
+
 /**
  * A layout defining the media tiles present on screen and their visual
  * arrangement.
@@ -139,4 +191,8 @@ export type Layout =
   | SpotlightExpandedLayout
   | OneOnOneLandscapeLayout
   | OneOnOnePortraitLayout
-  | PipLayout;
+  | PipLayout
+  | TogetherLayout
+  | FreeStageLayout
+  | HexagonLayout
+  | AsYouWantLayout;

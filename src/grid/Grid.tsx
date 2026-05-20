@@ -52,6 +52,7 @@ interface Tile<Model> {
   id: string;
   model: Model;
   onDrag: DragCallback | undefined;
+  onDoubleClick: (() => void) | undefined;
 }
 
 type PlacedTile<Model> = Tile<Model> & Rect;
@@ -81,10 +82,19 @@ interface DragState {
   cursorY: number;
 }
 
-interface SlotProps<Model> extends Omit<ComponentProps<"div">, "onDrag"> {
+interface SlotProps<Model> extends Omit<
+  ComponentProps<"div">,
+  "onDrag" | "onDoubleClick"
+> {
   id: string;
   model: Model;
   onDrag?: DragCallback;
+  /**
+   * Called when the user double-clicks the rendered tile. Bound on the
+   * animated tile, not the invisible slot, so the gesture survives the
+   * overlay-based rendering used by the grid.
+   */
+  onDoubleClick?: () => void;
   style?: CSSProperties;
   className?: string;
 }
@@ -289,13 +299,21 @@ export function Grid<
 
   const Slot: FC<SlotProps<TileModel>> = useMemo(
     () =>
-      function Slot({ id, model, onDrag, style, className, ...props }) {
+      function Slot({
+        id,
+        model,
+        onDrag,
+        onDoubleClick,
+        style,
+        className,
+        ...props
+      }) {
         const ref = useRef<HTMLDivElement | null>(null);
 
         useEffect(() => {
-          tiles.set(id, { id, model, onDrag });
+          tiles.set(id, { id, model, onDrag, onDoubleClick });
           return (): void => void tiles.delete(id);
-        }, [id, model, onDrag]);
+        }, [id, model, onDrag, onDoubleClick]);
 
         return (
           <div
@@ -556,18 +574,21 @@ export function Grid<
           Slot={Slot}
         />
       </LayoutContext>
-      {tileTransitions((spring, { id, model, onDrag, width, height }) => (
-        <TileWrapper
-          key={id}
-          id={id}
-          onDrag={onDrag ? onTileDragRef : null}
-          targetWidth={width}
-          targetHeight={height}
-          model={model}
-          Tile={Tile}
-          {...spring}
-        />
-      ))}
+      {tileTransitions(
+        (spring, { id, model, onDrag, onDoubleClick, width, height }) => (
+          <TileWrapper
+            key={id}
+            id={id}
+            onDrag={onDrag ? onTileDragRef : null}
+            onDoubleClick={onDoubleClick}
+            targetWidth={width}
+            targetHeight={height}
+            model={model}
+            Tile={Tile}
+            {...spring}
+          />
+        ),
+      )}
     </div>
   );
 }

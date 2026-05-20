@@ -152,6 +152,11 @@ export interface PipLayoutSummary {
   spotlight: string[];
 }
 
+export interface GridOnlyLayoutSummary {
+  type: "together" | "free-stage" | "hexagon" | "as-you-want";
+  grid: string[];
+}
+
 export type LayoutSummary =
   | GridLayoutSummary
   | SpotlightLandscapeLayoutSummary
@@ -159,7 +164,8 @@ export type LayoutSummary =
   | SpotlightExpandedLayoutSummary
   | OneOnOneLandscapeLayoutSummary
   | OneOnOnePortraitLayoutSummary
-  | PipLayoutSummary;
+  | PipLayoutSummary
+  | GridOnlyLayoutSummary;
 
 function summarizeLayout$(l$: Observable<Layout>): Observable<LayoutSummary> {
   return l$.pipe(
@@ -225,6 +231,17 @@ function summarizeLayout$(l$: Observable<Layout>): Observable<LayoutSummary> {
               type: l.type,
               spotlight: spotlight.map((vm) => vm.id),
             })),
+          );
+        case "together":
+        case "free-stage":
+        case "hexagon":
+        case "as-you-want":
+          return combineLatest(
+            l.grid.map((vm) => vm.media$),
+            (...grid) => ({
+              type: l.type,
+              grid: grid.map((vm) => vm.id),
+            }),
           );
       }
     }),

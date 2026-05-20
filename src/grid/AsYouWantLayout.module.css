@@ -1,0 +1,32 @@
+/*
+Copyright 2026 Element Creations Ltd.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE in the repository root for full details.
+*/
+
+.fixed {
+  block-size: 100%;
+}
+
+.board {
+  position: relative;
+  padding: var(--gap);
+  margin-inline: auto;
+}
+
+.slot {
+  position: absolute;
+  inline-size: calc(
+    var(--span) * var(--cell-w) + (var(--span) - 1) * var(--gap)
+  );
+  block-size: calc(
+    var(--span) * var(--cell-h) + (var(--span) - 1) * var(--gap)
+  );
+  inset-inline-start: calc(
+    var(--gap) + var(--col) * (var(--cell-w) + var(--gap))
+  );
+  inset-block-start: calc(
+    var(--gap) + var(--row) * (var(--cell-h) + var(--gap))
+  );
+}

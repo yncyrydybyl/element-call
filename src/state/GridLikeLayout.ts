@@ -50,3 +50,34 @@ export function gridLikeLayout(
     tiles,
   ];
 }
+
+export type GridOnlyLayoutType =
+  | "together"
+  | "free-stage"
+  | "hexagon"
+  | "as-you-want";
+
+/**
+ * Produces a grid-only layout (no spotlight, just a grid of participant tiles)
+ * with the given media. Used by the "together", "free-stage" and "hexagon"
+ * modes which differ only in the visual arrangement of the tiles.
+ */
+export function gridOnlyLayout(
+  media: LayoutMedia & { type: GridOnlyLayoutType },
+  visibleTiles: number,
+  setVisibleTiles: (value: number) => void,
+  prevTiles: TileStore,
+): [Layout & { type: GridOnlyLayoutType }, TileStore] {
+  const update = prevTiles.from(visibleTiles);
+  for (const mediaVm of media.grid) update.registerGridTile(mediaVm);
+  const tiles = update.build();
+
+  return [
+    {
+      type: media.type,
+      grid: tiles.gridTiles,
+      setVisibleTiles,
+    } as Layout & { type: GridOnlyLayoutType },
+    tiles,
+  ];
+}

@@ -10,6 +10,7 @@ import {
   type JSX,
   memo,
   type RefObject,
+  useEffect,
   useRef,
 } from "react";
 import { type EventTypes, type Handler, useDrag } from "@use-gesture/react";
@@ -27,6 +28,7 @@ interface Props<M, R extends HTMLElement> {
       state: Parameters<Handler<"drag", EventTypes["drag"]>>[0],
     ) => void
   > | null;
+  onDoubleClick?: () => void;
   /**
    * The width this tile will have once its animations have settled.
    */
@@ -50,6 +52,7 @@ const TileWrapper_ = memo(
   <M, R extends HTMLElement>({
     id,
     onDrag,
+    onDoubleClick,
     targetWidth,
     targetHeight,
     model,
@@ -74,6 +77,24 @@ const TileWrapper_ = memo(
       // within tiles (like the 'switch camera' button) on mobile.
       // https://github.com/pmndrs/use-gesture/issues/593
     });
+
+    // Double-click is bound capturing-style: if the inner tile contains
+    // interactive buttons, this still fires when the user double-clicks the
+    // tile body. Single clicks remain available to the inner UI.
+    useEffect(() => {
+      if (onDoubleClick === undefined) return;
+      const el = ref.current;
+      if (el === null) return;
+      const handler = (e: Event): void => {
+        // Don't trigger when double-clicking interactive controls inside the
+        // tile (mute, switch camera, etc.) - those have buttons/role=button.
+        if ((e.target as Element | null)?.closest("button,[role='button']"))
+          return;
+        onDoubleClick();
+      };
+      el.addEventListener("dblclick", handler);
+      return (): void => el.removeEventListener("dblclick", handler);
+    }, [onDoubleClick]);
 
     return (
       <Tile
