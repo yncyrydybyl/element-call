@@ -1,0 +1,24 @@
+name: Build & publish Docker image (datanauten.de)
+
+on:
+  push:
+    branches: [livekit]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-element-call.yaml
+    with:
+      package: full
+      vite_app_version: ${{ github.sha }}
+      build_mode: production
+
+  publish_docker:
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/build-and-publish-docker.yaml
+    with:
+      docker_tags: |
+        type=raw,value=latest
+        type=sha,format=short
