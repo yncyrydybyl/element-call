@@ -15,6 +15,7 @@ import {
 } from "livekit-client";
 import { type Room as MatrixRoom } from "matrix-js-sdk";
 import {
+  BehaviorSubject,
   catchError,
   combineLatest,
   distinctUntilChanged,
@@ -38,7 +39,6 @@ import {
   tap,
   throttleTime,
   timer,
-  BehaviorSubject,
 } from "rxjs";
 import { logger as rootLogger } from "matrix-js-sdk/lib/logger";
 import {
@@ -365,6 +365,9 @@ export interface CallViewModel {
    * and header as overlays.
    */
   edgeToEdge$: Behavior<boolean>;
+
+  settingsOpen$: Behavior<boolean>;
+  setSettingsOpen$: Behavior<(open: boolean) => void>;
 
   // audio routing
   /**
@@ -1080,10 +1083,12 @@ export function createCallViewModel$(
     }),
   );
 
-  const spotlightLandscapeLayoutMedia$: Observable<SpotlightLandscapeLayoutMedia> =
+  const spotlightLandscapeLayoutMedia$ = (
+    edgeToEdge: boolean,
+  ): Observable<SpotlightLandscapeLayoutMedia> =>
     combineLatest([grid$, spotlight$], (grid, spotlight) => ({
       type: "spotlight-landscape",
-      edgeToEdge: false,
+      edgeToEdge,
       spotlight,
       grid,
     }));
@@ -1250,7 +1255,7 @@ export function createCallViewModel$(
                       switchMap((expanded) =>
                         expanded
                           ? spotlightExpandedLayoutMedia$(false)
-                          : spotlightLandscapeLayoutMedia$,
+                          : spotlightLandscapeLayoutMedia$(false),
                       ),
                     );
                   case "together":
@@ -1286,10 +1291,7 @@ export function createCallViewModel$(
                   case "free-stage":
                   case "hexagon":
                   case "as-you-want":
-                    // Grid-style modes all fall back to a "spotlight"
-                    // landscape layout in flat window mode, since there's not
-                    // enough vertical space for a real grid arrangement.
-                    return spotlightLandscapeLayoutMedia$;
+                    return spotlightLandscapeLayoutMedia$(true);
                   case "spotlight":
                     return spotlightExpandedLayoutMedia$(true);
                 }
@@ -1405,6 +1407,10 @@ export function createCallViewModel$(
         // Layout is edge-to-edge; show/hide the footer in response to interactions
         return windowMode$.pipe(
           switchMap((mode) => {
+            if (mode === "pip" && platform !== "desktop") {
+              // No controls are shown in mobile pip as interactions are disabled
+              return of(false);
+            }
             const showInitially = mode !== "flat";
             const timeout$ = mode === "flat" ? timer(showFooterMs) : NEVER;
 
@@ -1455,6 +1461,10 @@ export function createCallViewModel$(
       map((naturallyShowFooter) => naturallyShowFooter && showFooterUrlParams),
     ),
   );
+  const settingsOpen$ = new BehaviorSubject(false);
+  const setSettingsOpen$ = constant((open: boolean) => {
+    settingsOpen$.next(open);
+  });
 
   const showHeader$ = scope.behavior<boolean>(
     windowMode$.pipe(
@@ -1820,6 +1830,8 @@ export function createCallViewModel$(
     showNameTags$,
     showHeader$: showHeader$,
     showFooter$: showFooter$,
+    settingsOpen$: settingsOpen$,
+    setSettingsOpen$: setSettingsOpen$,
     edgeToEdge$,
     earpieceMode$: earpieceMode$,
     audioOutputSwitcher$: audioOutputSwitcher$,
