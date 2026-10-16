@@ -14,6 +14,7 @@
     "build:embedded": "pnpm build:full --config vite-embedded.config.js",
     "build:embedded:production": "pnpm build:embedded",
     "build:embedded:development": "pnpm build:embedded --mode development",
+    "build:marcade": "pnpm build:embedded && find dist -name '*.map' -delete",
     "build:sdk:development": "pnpm build:sdk --mode development",
     "build:sdk": "pnpm build:full --config vite-sdk.config.js",
     "build:sdk:production": "pnpm build:sdk",

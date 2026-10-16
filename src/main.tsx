@@ -22,6 +22,7 @@ import { Initializer } from "./initializer";
 import { AppViewModel } from "./state/AppViewModel";
 import { globalScope } from "./state/ObservableScope";
 import { getUrlParams } from "./UrlParams";
+import { missingWidgetParamsError } from "./marcade";
 
 initRageshake().catch((e) => {
   logger.error("Failed to initialize rageshake", e);
@@ -41,9 +42,19 @@ if (!window.isSecureContext) {
   );
 } else if (!navigator.mediaDevices) {
   fatalError = new Error("Your browser does not support WebRTC.");
+} else {
+  fatalError = missingWidgetParamsError(getUrlParams());
 }
 
 if (fatalError !== null) {
+  // Marcade fork: the body stays hidden until the app sets a theme, which it
+  // never gets to do here.
+  document.body.classList.remove("no-theme");
+  Object.assign(document.getElementById("root")!.style, {
+    whiteSpace: "pre-wrap",
+    overflowWrap: "anywhere",
+    padding: "16px",
+  });
   root.render(fatalError.message);
   throw fatalError; // Stop the app early
 }

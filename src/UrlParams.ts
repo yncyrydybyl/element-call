@@ -22,6 +22,7 @@ import {
   UserIntent,
 } from "./UrlConfiguration";
 import { redact } from "./utils/redact";
+import { isUnresolvedTemplate, PARAM_ALIASES } from "./marcade";
 
 // Moved to their own module, so that a host can import them without the rest
 // of this one; re-exported here as they always were
@@ -174,7 +175,14 @@ class ParamParser {
   // leaking them to the server. However, we also check the normal query
   // string for backwards compatibility with versions that only used that.
   public getParam(name: string): string | null {
-    return this.fragmentParams.get(name) ?? this.queryParams.get(name);
+    const value = this.fragmentParams.get(name) ?? this.queryParams.get(name);
+    if (value !== null) return value;
+    // Marcade fork: fall back to the names the Marcade Player appends.
+    const alias = PARAM_ALIASES[name];
+    if (alias === undefined) return null;
+    const aliased =
+      this.fragmentParams.get(alias) ?? this.queryParams.get(alias);
+    return aliased === null || isUnresolvedTemplate(aliased) ? null : aliased;
   }
 
   public getEnumParam<T extends string>(
@@ -305,9 +313,13 @@ export const computeUrlParams = (search = "", hash = ""): UrlParams => {
    * In short: either provide url query parameters of UrlConfiguration or set the intent
    * (or the global defaults will be used).
    */
+  // Marcade fork: a widget added from the store states no intent, and should
+  // still behave as a call in this room (lobby first, no way out of the room)
+  // rather than as the standalone app.
   const intent = !isWidget
     ? UserIntent.Unknown
-    : (parser.getEnumParam("intent", UserIntent) ?? UserIntent.Unknown);
+    : (parser.getEnumParam("intent", UserIntent) ??
+      UserIntent.JoinExistingCall);
   const intentPreset = configurationForIntent(intent);
 
   const properties: UrlProperties = {
