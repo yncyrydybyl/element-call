@@ -17,6 +17,8 @@ AGPL-3.0-only).
 | Reads `matrix_room_id`, `matrix_user_id`, `matrix_device_id`, `matrix_base_url`, `matrix_display_name`, `matrix_client_language`, `matrix_client_theme` when Element Call's own parameter names are absent; ignores unresolved `$…` template values | `src/marcade.ts`, `ParamParser.getParam` in `src/UrlParams.ts` | The Player appends these names (the matrix-widget-toolkit convention) to every store widget. Element Call only knew `roomId`, `userId`, … |
 | A widget without an `intent` behaves like `intent=join_existing` (lobby first, confined to the room) instead of the standalone app | `computeUrlParams` in `src/UrlParams.ts` | A store install states no intent. Element Web's own call widget always passes one, so nothing changes there |
 | Framed without room/user/device/homeserver, it shows the `/addwidget` line that works, instead of falling back to the standalone app's login | `missingWidgetParamsError` in `src/marcade.ts`, `src/main.tsx` | A bare `/addwidget https://marcade.store/apps/io.element.call/<version>/` in Element Web gives the widget only `widgetId` and `parentUrl` |
+| A widget always renders the call, whatever path it is served from | `src/App.tsx` | The standalone router shows its home page at `/`; Element Web serves the widget at `…/room`, a store or a host of its own can serve it at a directory root |
+| The fatal-error text is shown (the body stays hidden until the app sets a theme) and wraps | `src/main.tsx` | Otherwise the missing-parameter explanation above is invisible |
 | `pnpm build:marcade`: the embedded build without sourcemaps | `package.json` | What the store builds: relative asset paths, no `config.json` (so no analytics or rageshake endpoint configured), 18 MB smaller |
 
 Everything else is upstream. Updating to a new Element Call release is a rebase
@@ -53,6 +55,14 @@ participant, with keys sent as encrypted to-device messages.
 `marcade/capabilities.txt` is what the widget requests, with the user, device
 and room ids it puts into some of them replaced by `{userId}`, `{deviceId}` and
 `{roomId}`. The store entry lists the same set.
+
+## Tested
+
+2026-10-16, v0.28.0 + these patches: a two-client call between the Marcade
+Player (this build, the Apps-tab URL with only the `matrix_*` parameters) and
+Element Web's built-in Element Call on chat.blackpony.club, encrypted room,
+BPC's LiveKit SFU. Both sides see both live video feeds, decrypted
+(`~/projects/marcade/supertest/elementcall/run-ec-marcade.mjs`, 7/7).
 
 ## Checks
 

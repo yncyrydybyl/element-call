@@ -85,9 +85,13 @@ async function open(fixture) {
     permissions: ["camera", "microphone"],
   });
   const page = await context.newPage();
-  await page.addInitScript((f) => {
-    window.__TEST_FIXTURE__ = f;
-  }, fixture);
+  // Served at "/", where the standalone app would show its home page.
+  await page.addInitScript(
+    (f) => {
+      window.__TEST_FIXTURE__ = f;
+    },
+    { widgetPath: "/", ...fixture },
+  );
   page.on("console", (m) => {
     if (process.env.PROBE_DEBUG && ["error", "warning"].includes(m.type()))
       console.log(`[${m.type()}] ${m.text().slice(0, 300)}`);

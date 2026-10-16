@@ -152,12 +152,19 @@ export const App: FC<Props> = ({ vm, widget }) => {
             <Sentry.ErrorBoundary
               fallback={(error) => <ErrorPage error={error} />}
             >
-              <Routes>
-                <SentryRoute path="/" element={<HomePage />} />
-                <SentryRoute path="/login" element={<LoginPage />} />
-                <SentryRoute path="/register" element={<RegisterPage />} />
-                <SentryRoute path="*" element={<RoomPage />} />
-              </Routes>
+              {widget !== null ? (
+                // Marcade fork: a widget is the call in its room, whatever
+                // path it is served from (the store serves it at a directory,
+                // which can be "/" on a host of its own).
+                <RoomPage />
+              ) : (
+                <Routes>
+                  <SentryRoute path="/" element={<HomePage />} />
+                  <SentryRoute path="/login" element={<LoginPage />} />
+                  <SentryRoute path="/register" element={<RegisterPage />} />
+                  <SentryRoute path="*" element={<RoomPage />} />
+                </Routes>
+              )}
             </Sentry.ErrorBoundary>
           </ProcessorProvider>
         </MediaDevicesContext>
